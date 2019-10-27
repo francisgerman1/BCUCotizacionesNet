@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<definitions xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="Cotiza" xmlns:wsdlns="Cotiza" name="wsbcucotizaciones" targetNamespace="Cotiza" xmlns="http://schemas.xmlsoap.org/wsdl/">
+  <types>
+    <xsd:schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" elementFormDefault="qualified" targetNamespace="Cotiza">
+      <xsd:complexType name="wsbcucotizacionesin">
+        <xsd:sequence>
+          <xsd:element name="Moneda" type="wsdlns:ArrayOfint" />
+          <xsd:element name="FechaDesde" nillable="true" type="xsd:date" />
+          <xsd:element name="FechaHasta" nillable="true" type="xsd:date" />
+          <xsd:element name="Grupo" type="xsd:byte" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="ArrayOfint">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="item" type="xsd:short" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="wsbcucotizacionesout">
+        <xsd:sequence>
+          <xsd:element name="respuestastatus" type="wsdlns:respuestastatus" />
+          <xsd:element name="datoscotizaciones" type="wsdlns:datoscotizaciones" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="respuestastatus">
+        <xsd:sequence>
+          <xsd:element name="status" type="xsd:byte" />
+          <xsd:element name="codigoerror" type="xsd:short" />
+          <xsd:element name="mensaje" type="xsd:string" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="datoscotizaciones">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="datoscotizaciones.dato" type="wsdlns:datoscotizaciones.dato" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="datoscotizaciones.dato">
+        <xsd:sequence>
+          <xsd:element name="Fecha" nillable="true" type="xsd:date" />
+          <xsd:element name="Moneda" type="xsd:short" />
+          <xsd:element name="Nombre" type="xsd:string" />
+          <xsd:element name="CodigoISO" type="xsd:string" />
+          <xsd:element name="Emisor" type="xsd:string" />
+          <xsd:element name="TCC" type="xsd:double" />
+          <xsd:element name="TCV" type="xsd:double" />
+          <xsd:element name="ArbAct" type="xsd:double" />
+          <xsd:element name="FormaArbitrar" type="xsd:byte" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:element name="wsbcucotizaciones.Execute">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element minOccurs="1" maxOccurs="1" name="Entrada" type="wsdlns:wsbcucotizacionesin" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="wsbcucotizaciones.ExecuteResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element minOccurs="1" maxOccurs="1" name="Salida" type="wsdlns:wsbcucotizacionesout" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:schema>
+  </types>
+  <message name="wsbcucotizaciones.ExecuteSoapIn">
+    <part name="parameters" element="wsdlns:wsbcucotizaciones.Execute" />
+  </message>
+  <message name="wsbcucotizaciones.ExecuteSoapOut">
+    <part name="parameters" element="wsdlns:wsbcucotizaciones.ExecuteResponse" />
+  </message>
+  <portType name="wsbcucotizacionesSoapPort">
+    <operation name="Execute">
+      <input message="wsdlns:wsbcucotizaciones.ExecuteSoapIn" />
+      <output message="wsdlns:wsbcucotizaciones.ExecuteSoapOut" />
+    </operation>
+  </portType>
+  <binding name="wsbcucotizacionesSoapBinding" type="wsdlns:wsbcucotizacionesSoapPort">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <operation name="Execute">
+      <soap:operation soapAction="Cotizaaction/AWSBCUCOTIZACIONES.Execute" />
+      <input>
+        <soap:body use="literal" />
+      </input>
+      <output>
+        <soap:body use="literal" />
+      </output>
+    </operation>
+  </binding>
+  <service name="wsbcucotizaciones">
+    <port name="wsbcucotizacionesSoapPort" binding="wsdlns:wsbcucotizacionesSoapBinding">
+      <soap:address location="https://cotizaciones.bcu.gub.uy/wscotizaciones/servlet/awsbcucotizaciones" />
+    </port>
+  </service>
+</definitions>
