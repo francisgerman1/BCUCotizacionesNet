@@ -135,6 +135,11 @@ namespace CotizacionBCU
             });
         }
 
+        /// <summary>
+        /// Obtiene la ultima cotizacion de las monedas solicitadas
+        /// </summary>
+        /// <param name="monedas"></param>
+        /// <returns></returns>
         public static Task<List<Moneda>> ObtenerUltimaAsync(IEnumerable<Moneda.TipoMonedaEnum> monedas)
         {
             return Task.Run(async () =>
@@ -161,11 +166,32 @@ namespace CotizacionBCU
                 return _monedas;
             });
         }
+    
+        /// <summary>
+        /// Obtiene la ultima cotizacion de las monedas solicitadas
+        /// </summary>
+        /// <param name="monedas"></param>
+        /// <returns></returns>
         public static List<Moneda> ObtenerUltima(IEnumerable<Moneda.TipoMonedaEnum> monedas) => AsyncUtil.RunSync(() => ObtenerUltimaAsync(monedas));
 
+        /// <summary>
+        /// Retorna la ultima cotizacion disponible de la moneda requerida.
+        /// </summary>
+        /// <param name="moneda">Moneda la cual se desea la cotizacion</param>
+        /// <returns></returns>
         public static Task<Moneda> ObtenerUltimaAsync(Moneda.TipoMonedaEnum moneda) => Task.Run(async () => (await ObtenerUltimaAsync(new[] { moneda })).Single());
+      
+        /// <summary>
+        /// Retorna la ultima cotizacion disponible de la moneda requerida.
+        /// </summary>
+        /// <param name="moneda">Moneda la cual se desea la cotizacion</param>
+        /// <returns></returns>
         public static Moneda ObtenerUltima(Moneda.TipoMonedaEnum moneda) => AsyncUtil.RunSync(() => ObtenerUltimaAsync(moneda));
 
+        /// <summary>
+        /// Obtiene la ultima cotizacion de las monedas por defecto DOLAR USA, PESO ARG, REAL, UI ,UR, EURO
+        /// </summary>
+        /// <returns></returns>
         public static Task<List<Moneda>> ObtenerUltimaAsync()
         {
             return ObtenerUltimaAsync(new List<Moneda.TipoMonedaEnum>
@@ -178,15 +204,48 @@ namespace CotizacionBCU
                 Moneda.TipoMonedaEnum.EURO
             });
         }
+
+        /// <summary>
+        /// Obtiene la ultima cotizacion de las monedas por defecto DOLAR USA, PESO ARG, REAL, UI ,UR, EURO
+        /// </summary>
+        /// <returns></returns>
         public static List<Moneda> ObtenerUltima() => AsyncUtil.RunSync(() => ObtenerUltimaAsync());
 
+        /// <summary>
+        /// Obtiene las cotizaciones de las monedas en la fecha de cierre especificada
+        /// </summary>
+        /// <param name="fecha"></param>
+        /// <param name="monedas"></param>
+        /// <returns></returns>
         public static Task<List<Moneda>> ObtenerAsync(DateTime? fecha, IEnumerable<Moneda.TipoMonedaEnum> monedas)
         {
             return ObtenerCotizacionAsync(fecha, monedas);
         }
+
+        /// <summary>
+        /// Obtiene las cotizaciones de las monedas en la fecha de cierre especificada
+        /// </summary>
+        /// <param name="fecha"></param>
+        /// <param name="monedas"></param>
+        /// <returns></returns>
         public static List<Moneda> Obtener(DateTime? fecha, IEnumerable<Moneda.TipoMonedaEnum> monedas) => AsyncUtil.RunSync(() => ObtenerAsync(fecha, monedas));
 
+        /// <summary>
+        /// Obtiene la cotizacion de una moneda
+        /// </summary>
+        /// <param name="fecha"></param>
+        /// <param name="moneda"></param>
+        /// <exception cref="CotizacionException"></exception>
+        /// <returns></returns>
         public static Task<Moneda> ObtenerAsync(DateTime? fecha, Moneda.TipoMonedaEnum moneda) => Task.Run(async () => (await ObtenerCotizacionAsync(fecha, new[] { moneda })).Single());
+
+        /// <summary>
+        /// Obtiene la cotizacion de una moneda
+        /// </summary>
+        /// <param name="fecha"></param>
+        /// <param name="moneda"></param>
+        /// <exception cref="CotizacionException"></exception>
+        /// <returns></returns>
         public static Moneda Obtener(DateTime? fecha, Moneda.TipoMonedaEnum moneda) => AsyncUtil.RunSync(() => ObtenerAsync(fecha, moneda));
     }
 }
