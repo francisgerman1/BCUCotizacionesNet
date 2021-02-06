@@ -5,8 +5,9 @@ Libreria .NET para consultar las cotizaciones del Banco Central del Uruguay
 
 1. [![Download Laps](https://img.shields.io/badge/DLL-Descargar-green)](https://github.com/francisgerman1/BCUCotizacionesNetFramework/releases/latest/download/CotizacionBCU.dll)
 2. Copiar este codigo en tu archivo de configuracion
-   ```sh
-   <configuration>
+
+```xml
+<configuration>
 	<system.serviceModel>
 		<bindings>
 			<basicHttpBinding>
@@ -30,4 +31,4 @@ Libreria .NET para consultar las cotizaciones del Banco Central del Uruguay
 		</client>
 	</system.serviceModel>
 </configuration>
-   ```
+```
