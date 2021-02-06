@@ -1,7 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Threading.Tasks;
 
 namespace CotizacionBCU.Tests
 {
@@ -114,9 +114,40 @@ namespace CotizacionBCU.Tests
             }
         }
         [TestMethod]
+        public async Task ObtenerUltimaAsync()
+        {
+            var ultima = await Cotizacion.ObtenerUltimaAsync();
+
+            Assert.IsNotNull(ultima);
+            Assert.IsTrue(ultima.Count > 0);
+
+            foreach (var c in ultima)
+            {
+                Assert.IsTrue(c.Compra > 0);
+                Assert.IsTrue(c.Venta > 0);
+                Assert.IsTrue(c.Fecha >= DateTime.Now.AddDays(-7));
+                Assert.IsFalse(string.IsNullOrEmpty(c.Emisor));
+                Assert.IsFalse(string.IsNullOrEmpty(c.Nombre));
+                Assert.IsFalse(string.IsNullOrEmpty(c.CodigoISO));
+            }
+        }
+        [TestMethod]
         public void ObtenerUltimaConUnaSola()
         {
             var m = Cotizacion.ObtenerUltima(Moneda.TipoMonedaEnum.DOLAR_USD);
+
+            Assert.IsNotNull(m);
+            Assert.IsTrue(m.Compra > 0);
+            Assert.IsTrue(m.Venta > 0);
+            Assert.IsTrue(m.Fecha >= DateTime.Now.AddDays(-7));
+            Assert.IsFalse(string.IsNullOrEmpty(m.Emisor));
+            Assert.IsFalse(string.IsNullOrEmpty(m.Nombre));
+            Assert.IsFalse(string.IsNullOrEmpty(m.CodigoISO));
+        }
+        [TestMethod]
+        public async Task ObtenerUltimaConUnaSolaAsync()
+        {
+            var m = await Cotizacion.ObtenerUltimaAsync(Moneda.TipoMonedaEnum.DOLAR_USD);
 
             Assert.IsNotNull(m);
             Assert.IsTrue(m.Compra > 0);
@@ -145,11 +176,42 @@ namespace CotizacionBCU.Tests
                 Assert.IsFalse(string.IsNullOrEmpty(c.CodigoISO));
             }
         }
+        [TestMethod]
+        public async Task ObtenerUltimaTodasAsync()
+        {
+            var ultima = await Cotizacion.ObtenerUltimaAsync(_todasMonedas);
+
+            Assert.IsNotNull(ultima);
+            Assert.IsTrue(ultima.Count > 0);
+
+            foreach (var c in ultima)
+            {
+                Assert.IsTrue(c.Compra > 0);
+                Assert.IsTrue(c.Venta > 0);
+                Assert.IsTrue(c.Fecha >= DateTime.Now.AddDays(-7));
+                Assert.IsFalse(string.IsNullOrEmpty(c.Emisor));
+                Assert.IsFalse(string.IsNullOrEmpty(c.Nombre));
+                Assert.IsFalse(string.IsNullOrEmpty(c.CodigoISO));
+            }
+        }
 
         [TestMethod]
         public void ObtenerUltimaConFecha()
         {
             var m = Cotizacion.Obtener(UltimoViernes(), Moneda.TipoMonedaEnum.DOLAR_USD);
+
+            Assert.IsNotNull(m);
+            Assert.IsTrue(m.Compra > 0);
+            Assert.IsTrue(m.Venta > 0);
+            Assert.IsTrue(m.Fecha >= DateTime.Now.AddDays(-7));
+            Assert.IsFalse(string.IsNullOrEmpty(m.Emisor));
+            Assert.IsFalse(string.IsNullOrEmpty(m.Nombre));
+            Assert.IsFalse(string.IsNullOrEmpty(m.CodigoISO));
+        }
+        [TestMethod]
+        public async Task ObtenerUltimaConFechaAsync()
+        {
+            var m = await Cotizacion.ObtenerAsync(UltimoViernes(), Moneda.TipoMonedaEnum.DOLAR_USD);
 
             Assert.IsNotNull(m);
             Assert.IsTrue(m.Compra > 0);
@@ -179,12 +241,31 @@ namespace CotizacionBCU.Tests
             }
         }
 
-        private DateTime UltimoViernes()
+        [TestMethod]
+        public async Task ObtenerUltimaConFechaTodasAsync()
+        {
+            var ultima = await Cotizacion.ObtenerAsync(UltimoViernes(), _todasMonedas);
+
+            Assert.IsNotNull(ultima);
+            Assert.IsTrue(ultima.Count > 0);
+
+            foreach (var c in ultima)
+            {
+                Assert.IsTrue(c.Compra > 0);
+                Assert.IsTrue(c.Venta > 0);
+                Assert.IsTrue(c.Fecha >= DateTime.Now.AddDays(-7));
+                Assert.IsFalse(string.IsNullOrEmpty(c.Emisor));
+                Assert.IsFalse(string.IsNullOrEmpty(c.Nombre));
+                Assert.IsFalse(string.IsNullOrEmpty(c.CodigoISO));
+            }
+        }
+
+        private DateTime? UltimoViernes()
         {
             DateTime ultimoViernes = DateTime.Now.AddDays(-1);
             while (ultimoViernes.DayOfWeek != DayOfWeek.Wednesday)
                 ultimoViernes = ultimoViernes.AddDays(-1);
-            return ultimoViernes;
+            return (DateTime?)ultimoViernes;
         }
     }
 }
