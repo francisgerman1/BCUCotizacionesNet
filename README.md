@@ -1,11 +1,10 @@
 # BCUCotizacionesNetFramework ![Download Laps](https://img.shields.io/github/license/francisgerman1/BCUCotizacionesNetFramework)
-Libreria .NET para consultar las cotizaciones del Banco Central del Uruguay 
+Librería .NET para consultar las cotizaciones del Banco Central del Uruguay
 
-### Instalacion
+### Instalación
 
 1. [![Download Laps](https://img.shields.io/badge/DLL-Descargar-green)](https://github.com/francisgerman1/BCUCotizacionesNetFramework/releases/latest/download/CotizacionBCU.dll)
-2. Copiar este codigo en tu archivo de configuracion
-
+2. Copiar este código en tu archivo de configuración
 ```xml
 <configuration>
 	<system.serviceModel>
