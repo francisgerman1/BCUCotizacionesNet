@@ -20,15 +20,12 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-
 using CotizacionBCU.UltimoCierreBCU;
 using CotizacionBCU.WS_CotizacionBCU;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CotizacionBCU
 {
@@ -37,38 +34,23 @@ namespace CotizacionBCU
     /// </summary>
     public class Cotizacion
     {
-        #region SINGLETON
-        private static Cotizacion instancia;
-        private Cotizacion() { }
-        public static Cotizacion Instancia
-        {
-            get
-            {
-                if (instancia == null)
-                    instancia = new Cotizacion();
-                return instancia;
-            }
-        }
-        #endregion
-
-
         /// <summary>
         /// Retorna la ultima cotizacion disponible de la moneda requerida.
         /// </summary>
         /// <param name="tipoMoneda">Moneda la cual se desea la cotizacion</param>
         /// <returns></returns>
-        public Moneda UltimaCotizacion(Moneda.TipoMonedaEnum moneda)
+        public static Moneda ObtenerUltima(Moneda.TipoMonedaEnum moneda)
         {
             Moneda m = null;
 
-            //Proxy donde obtengo la ultima fecha de cierre del BCU
-            wsultimocierreSoapPortClient client_ult_cierre = null;
+            //Proxy BCU
+            wsultimocierreSoapPortClient proxy = null;
 
             try
             {
-                client_ult_cierre = new wsultimocierreSoapPortClient();
-                client_ult_cierre.Open();
-                wsultimocierreout resUltFch = client_ult_cierre.Execute();
+                proxy = new wsultimocierreSoapPortClient();
+                proxy.Open();
+                wsultimocierreout resUltFch = proxy.Execute();
                 string ultFch = resUltFch.Fecha;
 
                 m = ObtenerCotizacion(ultFch, moneda);
@@ -79,8 +61,7 @@ namespace CotizacionBCU
             }
             finally
             {
-                if (client_ult_cierre != null)
-                    client_ult_cierre.Close();
+                proxy?.Close();
             }
             return m;
         }
@@ -90,29 +71,26 @@ namespace CotizacionBCU
         /// </summary>
         /// <param name="monedas"></param>
         /// <returns></returns>
-        public Moneda[] UltimaCotizacion(Moneda.TipoMonedaEnum[] monedas)
+        public static List<Moneda> ObtenerUltima(IEnumerable<Moneda.TipoMonedaEnum> monedas)
         {
-            Moneda[] ret = new Moneda[monedas.Length];
-            for (int i = 0; i < monedas.Length; i++)
-                ret[i] = UltimaCotizacion(monedas[i]);
-            return ret;
+            return monedas.Select(m => ObtenerUltima(m)).ToList();
         }
 
         /// <summary>
         /// Obtiene la ultima cotizacion de las monedas por defecto DOLAR USA, PESO ARG, REAL, UI ,UR, EURO
         /// </summary>
         /// <returns></returns>
-        public Moneda[] UltimaCotizacion()
+        public static List<Moneda> ObtenerUltima()
         {
-            Moneda.TipoMonedaEnum[] monedas = {
+            return ObtenerUltima(new List<Moneda.TipoMonedaEnum>
+            {
                 Moneda.TipoMonedaEnum.DOLAR_USD,
                 Moneda.TipoMonedaEnum.PESO_ARGENTINO,
                 Moneda.TipoMonedaEnum.REAL,
                 Moneda.TipoMonedaEnum.UNIDAD_INDEXADA,
                 Moneda.TipoMonedaEnum.UNIDAD_REAJUSTABLE,
-                Moneda.TipoMonedaEnum.EURO };
-
-            return UltimaCotizacion(monedas);
+                Moneda.TipoMonedaEnum.EURO
+            });
         }
 
         /// <summary>
@@ -121,14 +99,22 @@ namespace CotizacionBCU
         /// <param name="fecha"></param>
         /// <param name="monedas"></param>
         /// <returns></returns>
-        public Moneda[] Cotizaciones(DateTime fecha, Moneda.TipoMonedaEnum[] monedas)
+        public static List<Moneda> Obtener(DateTime fechaCierre, IEnumerable<Moneda.TipoMonedaEnum> monedas)
         {
-            Moneda[] ret = new Moneda[monedas.Length];
-            var array_monedas = CodMonedas(monedas);
-            string fechaStr = fecha.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
-            for (int i = 0; i < ret.Length; i++)
-                ret[i] = ObtenerCotizacion(fechaStr, monedas[i]);
-            return ret;
+            var fecha = fechaCierre.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+            return monedas.Select(m => ObtenerCotizacion(fecha, m)).ToList();
+        }
+
+        /// <summary>
+        /// Obtiene la cotizacion de la moneda especificada en la fecha de cierre del banco
+        /// </summary>
+        /// <param name="fecha">Fecha de cierre del BCU</param>
+        /// <param name="moneda">Tipo de moneda</param>
+        /// <exception cref="CotizacionException"></exception>
+        /// <returns></returns>
+        public static Moneda Obtener(DateTime fecha, Moneda.TipoMonedaEnum moneda)
+        {
+            return ObtenerCotizacion(fecha.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture), moneda);
         }
 
         /// <summary>
@@ -136,37 +122,39 @@ namespace CotizacionBCU
         /// </summary>
         /// <param name="fecha"></param>
         /// <param name="moneda"></param>
+        /// <exception cref="CotizacionException"></exception>
         /// <returns></returns>
-        private Moneda ObtenerCotizacion(string fecha, Moneda.TipoMonedaEnum moneda)
+        private static Moneda ObtenerCotizacion(string fecha, Moneda.TipoMonedaEnum moneda)
         {
             Moneda m = null;
 
-            //Proxy WebService donde obtengo las cotizaciones
-            wsbcucotizacionesSoapPortClient client_Bcu = null;
+            //Proxy BCU
+            wsbcucotizacionesSoapPortClient proxy = null;
 
             try
             {
-                client_Bcu = new wsbcucotizacionesSoapPortClient();
-                wsbcucotizacionesin entrada = new wsbcucotizacionesin();
+                proxy = new wsbcucotizacionesSoapPortClient();
+                var entrada = new wsbcucotizacionesin
+                {
+                    FechaDesde = fecha,
+                    FechaHasta = fecha,
+                    Moneda = CodigosMonedas(moneda)
+                };
 
-                entrada.FechaDesde = fecha;
-                entrada.FechaHasta = fecha;
-                entrada.Moneda = CodMonedas(new Moneda.TipoMonedaEnum[] { moneda });
-
-                client_Bcu.Open();
-                var res = client_Bcu.Execute(entrada);
+                proxy.Open();
+                var res = proxy.Execute(entrada);
 
                 //Todo OK
-                if (res != null && res.respuestastatus.status == 1 && res.datoscotizaciones.Count > 0)
-                    m = new Moneda()
+                if (res?.respuestastatus.status == 1 && res?.datoscotizaciones?.Count > 0)
+                    m = new Moneda
                     {
                         Id = TipoMonedaToCodigo(moneda),
-                        Nombre = res.datoscotizaciones[0].Nombre,
-                        Compra = res.datoscotizaciones[0].TCC,
-                        Venta = res.datoscotizaciones[0].TCV,
-                        Emisor = res.datoscotizaciones[0].Emisor,
-                        CodigoISO = res.datoscotizaciones[0].CodigoISO,
-                        Fecha = DateTime.ParseExact(res.datoscotizaciones[0].Fecha, "yyyy-MM-dd", CultureInfo.InvariantCulture)
+                        Nombre = res.datoscotizaciones.First().Nombre,
+                        Compra = res.datoscotizaciones.First().TCC,
+                        Venta = res.datoscotizaciones.First().TCV,
+                        Emisor = res.datoscotizaciones.First().Emisor,
+                        CodigoISO = res.datoscotizaciones.First().CodigoISO,
+                        Fecha = DateTime.ParseExact(res.datoscotizaciones.First().Fecha, "yyyy-MM-dd", CultureInfo.InvariantCulture)
                     };
                 else
                     throw new CotizacionException("No se ha podido obtener la cotizacion | " + res.respuestastatus.mensaje);
@@ -177,22 +165,9 @@ namespace CotizacionBCU
             }
             finally
             {
-                if (client_Bcu != null)
-                    client_Bcu.Close();
+                proxy?.Close();
             }
             return m;
-        }
-
-        /// <summary>
-        /// Obtiene la cotizacion de la moneda especificada en la fecha de cierre del banco
-        /// </summary>
-        /// <param name="fecha">Fecha de cierre del BCU</param>
-        /// <param name="moneda">Tipo de moneda</param>
-        /// <exception cref="CotizacionException"></exception>
-        /// <returns></returns>
-        public Moneda ObtenerCotizacion(DateTime fecha, Moneda.TipoMonedaEnum moneda)
-        {
-            return ObtenerCotizacion(fecha.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture), moneda);
         }
 
         /// <summary>
@@ -200,12 +175,24 @@ namespace CotizacionBCU
         /// </summary>
         /// <param name="monedas"></param>
         /// <returns></returns>
-        private ArrayOfint CodMonedas(Moneda.TipoMonedaEnum[] monedas)
+        private static ArrayOfint CodigosMonedas(IEnumerable<Moneda.TipoMonedaEnum> monedas)
         {
-            ArrayOfint ret = new ArrayOfint();
-            for (int i = 0; i < monedas.Length; i++)
-                ret.Add(TipoMonedaToCodigo(monedas[i]));
+            var ret = new ArrayOfint();
+
+            foreach (var moneda in monedas)
+                ret.Add(TipoMonedaToCodigo(moneda));
+
             return ret;
+        }
+
+        /// <summary>
+        /// Pasa los enums de tipo moneda al codigo que reconoce el BCU
+        /// </summary>
+        /// <param name="monedas"></param>
+        /// <returns></returns>
+        private static ArrayOfint CodigosMonedas(Moneda.TipoMonedaEnum moneda)
+        {
+            return CodigosMonedas(new List<Moneda.TipoMonedaEnum> { moneda });
         }
 
         /// <summary>
@@ -213,7 +200,7 @@ namespace CotizacionBCU
         /// </summary>
         /// <param name="tipo"></param>
         /// <returns></returns>
-        private short TipoMonedaToCodigo(Moneda.TipoMonedaEnum tipo)
+        private static short TipoMonedaToCodigo(Moneda.TipoMonedaEnum tipo)
         {
             switch (tipo)
             {

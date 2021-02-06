@@ -21,10 +21,6 @@
 //SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CotizacionBCU
 {
@@ -85,9 +81,9 @@ namespace CotizacionBCU
         public override string ToString()
         {
             return $"Nombre: {Nombre} " +
-                   $"Compra: {Compra.ToString("C")} " +
-                   $"Venta: {Venta.ToString("C")} " +
-                   $"Fecha: {Fecha.ToString("D")} " +
+                   $"Compra: {Compra:C} " +
+                   $"Venta: {Venta:C} " +
+                   $"Fecha: {Fecha:D} " +
                    $"Emisor: {Emisor} " +
                    $"ISO: {CodigoISO} ";
         }
