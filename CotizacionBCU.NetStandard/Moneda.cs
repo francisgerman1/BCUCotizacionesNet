@@ -8,10 +8,6 @@ namespace CotizacionBCU
     public class Moneda
     {
         /// <summary>
-        /// Codigo de moneda que maneja el BCU
-        /// </summary>
-        public short Id { get; set; }
-        /// <summary>
         /// Nombre de Moneda
         /// </summary>
         public string Nombre { get; set; }
@@ -29,7 +25,7 @@ namespace CotizacionBCU
         /// <summary>
         /// Fecha de Cotizacion
         /// </summary>
-        public DateTime Fecha { get; set; }
+        public DateTime? Fecha { get; set; }
 
         /// <summary>
         /// Codigo ISO
