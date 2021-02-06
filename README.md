@@ -3,7 +3,7 @@ Librería .NET para consultar las cotizaciones del Banco Central del Uruguay
 
 ### Instalación
 
-1. Descarga por dll, package manager, .net cli
+1. Descarga por DLL, Package Manager o .Net CLI
 
  [![Download Laps](https://img.shields.io/badge/DLL-Descargar-green)](https://github.com/francisgerman1/BCUCotizacionesNetFramework/releases/latest/download/CotizacionBCU.dll) 
 
