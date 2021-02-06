@@ -22,12 +22,10 @@ dotnet add package BCUCotizaciones
 			<basicHttpBinding>
 				<binding name="wsultimocierreSoapBinding">
 					<security mode="Transport" />
-				</binding>
-				<binding name="wsultimocierreSoapBinding1" />
+				</binding>				
 				<binding name="wsbcucotizacionesSoapBinding">
 					<security mode="Transport" />
-				</binding>
-				<binding name="wsbcucotizacionesSoapBinding1" />
+				</binding>				
 			</basicHttpBinding>
 		</bindings>
 		<client>
