@@ -1,6 +1,5 @@
 ﻿using BcuWebserviceUltimaCotizacion;
 using BcuWebServiceUltimoCierre;
-using CotizacionBCU.NetStandard;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -166,13 +165,13 @@ namespace CotizacionBCU
                 return _monedas;
             });
         }
-    
+
         /// <summary>
         /// Obtiene la ultima cotizacion de las monedas solicitadas
         /// </summary>
         /// <param name="monedas"></param>
         /// <returns></returns>
-        public static List<Moneda> ObtenerUltima(IEnumerable<Moneda.TipoMonedaEnum> monedas) => AsyncUtil.RunSync(() => ObtenerUltimaAsync(monedas));
+        public static List<Moneda> ObtenerUltima(IEnumerable<Moneda.TipoMonedaEnum> monedas) => RunSync(() => ObtenerUltimaAsync(monedas));
 
         /// <summary>
         /// Retorna la ultima cotizacion disponible de la moneda requerida.
@@ -180,13 +179,13 @@ namespace CotizacionBCU
         /// <param name="moneda">Moneda la cual se desea la cotizacion</param>
         /// <returns></returns>
         public static Task<Moneda> ObtenerUltimaAsync(Moneda.TipoMonedaEnum moneda) => Task.Run(async () => (await ObtenerUltimaAsync(new[] { moneda })).Single());
-      
+
         /// <summary>
         /// Retorna la ultima cotizacion disponible de la moneda requerida.
         /// </summary>
         /// <param name="moneda">Moneda la cual se desea la cotizacion</param>
         /// <returns></returns>
-        public static Moneda ObtenerUltima(Moneda.TipoMonedaEnum moneda) => AsyncUtil.RunSync(() => ObtenerUltimaAsync(moneda));
+        public static Moneda ObtenerUltima(Moneda.TipoMonedaEnum moneda) => RunSync(() => ObtenerUltimaAsync(moneda));
 
         /// <summary>
         /// Obtiene la ultima cotizacion de las monedas por defecto DOLAR USA, PESO ARG, REAL, UI ,UR, EURO
@@ -209,7 +208,7 @@ namespace CotizacionBCU
         /// Obtiene la ultima cotizacion de las monedas por defecto DOLAR USA, PESO ARG, REAL, UI ,UR, EURO
         /// </summary>
         /// <returns></returns>
-        public static List<Moneda> ObtenerUltima() => AsyncUtil.RunSync(() => ObtenerUltimaAsync());
+        public static List<Moneda> ObtenerUltima() => RunSync(() => ObtenerUltimaAsync());
 
         /// <summary>
         /// Obtiene las cotizaciones de las monedas en la fecha de cierre especificada
@@ -228,7 +227,7 @@ namespace CotizacionBCU
         /// <param name="fecha"></param>
         /// <param name="monedas"></param>
         /// <returns></returns>
-        public static List<Moneda> Obtener(DateTime? fecha, IEnumerable<Moneda.TipoMonedaEnum> monedas) => AsyncUtil.RunSync(() => ObtenerAsync(fecha, monedas));
+        public static List<Moneda> Obtener(DateTime? fecha, IEnumerable<Moneda.TipoMonedaEnum> monedas) => RunSync(() => ObtenerAsync(fecha, monedas));
 
         /// <summary>
         /// Obtiene la cotizacion de una moneda
@@ -246,6 +245,13 @@ namespace CotizacionBCU
         /// <param name="moneda"></param>
         /// <exception cref="CotizacionException"></exception>
         /// <returns></returns>
-        public static Moneda Obtener(DateTime? fecha, Moneda.TipoMonedaEnum moneda) => AsyncUtil.RunSync(() => ObtenerAsync(fecha, moneda));
+        public static Moneda Obtener(DateTime? fecha, Moneda.TipoMonedaEnum moneda) => RunSync(() => ObtenerAsync(fecha, moneda));
+
+        private static TResult RunSync<TResult>(Func<Task<TResult>> task) =>
+
+          Task.Factory.StartNew(task)
+                      .Unwrap()
+                      .GetAwaiter()
+                      .GetResult();
     }
 }
