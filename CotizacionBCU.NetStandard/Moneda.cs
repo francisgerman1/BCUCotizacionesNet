@@ -8,6 +8,14 @@ namespace CotizacionBCU
     public class Moneda
     {
         /// <summary>
+        /// Arbitraje
+        /// </summary>
+        public double Arbitraje { get; set; }
+        /// <summary>
+        /// Codigo moneda segun BCU
+        /// </summary>
+        public short Codigo { get; set; }
+        /// <summary>
         /// Nombre de Moneda
         /// </summary>
         public string Nombre { get; set; }
