@@ -1,5 +1,5 @@
 # BCUCotizacionesNet ![Download Laps](https://img.shields.io/github/license/francisgerman1/BCUCotizacionesNetFramework)
-Librería .NET para consultar las cotizaciones del Banco Central del Uruguay
+Wrapper .NET para consultar las cotizaciones del Banco Central del Uruguay
 
 ## Instalación
 

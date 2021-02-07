@@ -11,7 +11,7 @@
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageProjectUrl>https://github.com/francisgerman1/BCUCotizacionesNet</PackageProjectUrl>
-    <Description>Librería .NET para consultar las cotizaciones del Banco Central del Uruguay</Description>
+    <Description>Wrapper .NET para consultar las cotizaciones del Banco Central del Uruguay</Description>
   </PropertyGroup>
 
   <ItemGroup>
